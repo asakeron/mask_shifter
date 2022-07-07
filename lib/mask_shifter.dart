@@ -12,7 +12,7 @@ class MaskedTextInputFormatterShifter extends TextInputFormatter {
   @override
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
-    if (newValue.text.length > 0) {
+    if (newValue.text.isNotEmpty) {
       if (newValue.text.length > oldValue.text.length) {
         if (newValue.text.length > maskTWO.length) return oldValue;
 
@@ -21,9 +21,8 @@ class MaskedTextInputFormatterShifter extends TextInputFormatter {
             newValue.text.length != oldValue.text.length) {
           if (maskONE[newValue.text.length - 1] != "X") {
             return TextEditingValue(
-              text: '${oldValue.text}' +
-                  maskONE[newValue.text.length - 1] +
-                  '${newValue.text.substring(newValue.text.length - 1)}',
+              text:
+                  '${oldValue.text}${maskONE[newValue.text.length - 1]}${newValue.text.substring(newValue.text.length - 1)}',
               selection: TextSelection.collapsed(
                 offset: newValue.selection.end + 1,
               ),
@@ -33,18 +32,18 @@ class MaskedTextInputFormatterShifter extends TextInputFormatter {
           String two = "";
 
           if (oldValue.text.length == maskONE.length) {
-            newValue.text.runes.forEach((int rune) {
-              var character = new String.fromCharCode(rune);
+            for (var rune in newValue.text.runes) {
+              var character = String.fromCharCode(rune);
               if (character != "." && character != "-" && character != "/") {
                 two = two + character;
                 if (maskTWO[two.length] != "X") {
-                  two = '$two' + maskTWO[two.length];
+                  two = '$two${maskTWO[two.length]}';
                 }
               }
-            });
+            }
 
             return TextEditingValue(
-              text: '$two',
+              text: two,
               selection: TextSelection.collapsed(
                 offset: newValue.selection.end + 1,
               ),
@@ -54,17 +53,17 @@ class MaskedTextInputFormatterShifter extends TextInputFormatter {
       } else if (oldValue.text.length > newValue.text.length) {
         if (oldValue.text.length == (maskONE.length + 1)) {
           String one = "";
-          newValue.text.runes.forEach((int rune) {
-            var character = new String.fromCharCode(rune);
+          for (var rune in newValue.text.runes) {
+            var character = String.fromCharCode(rune);
             if (character != "." && character != "-" && character != "/") {
               one = one + character;
               if (maskONE[one.length] != "X") {
-                one = '$one' + maskONE[one.length];
+                one = '$one${maskONE[one.length]}';
               }
             }
-          });
+          }
           return TextEditingValue(
-            text: '$one',
+            text: one,
             selection: TextSelection.collapsed(
               offset: newValue.selection.end,
             ),
